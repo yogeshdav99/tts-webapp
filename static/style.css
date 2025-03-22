@@ -1,68 +1,333 @@
-body {
-  font-family: Arial, sans-serif;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-}
-textarea {
-  width: 100%;
-  height: 150px;
-  margin: 10px 0;
-  padding: 10px;
-}
-button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
+:root {
+  --primary: #6366f1;
+  --secondary: #8b5cf6;
+  --success: #10b981;
+  --error: #ef4444;
+  --background: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
 }
 
-.download-btn {
-  display: inline-block;
-  background: #28a745;
-  color: white;
-  padding: 8px 16px;
-  text-decoration: none;
-  margin-top: 10px;
-  border-radius: 4px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 2rem;
 }
 
 .container {
-  background: #f8f9fa;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
 }
 
-.error {
-  color: #dc3545;
-  margin: 10px 0;
+/* Add error border class */
+.error-border {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
 }
 
-select {
-  padding: 8px;
-  margin: 10px 0;
-  width: 100%;
+/* Rest of your existing CSS remains the same... */
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-/* Add previous styles plus these */
-.success {
-  color: #28a745;
-  margin: 10px 0;
-  padding: 10px;
-  background: #e8f5e9;
-  border-radius: 4px;
+.audio-icon {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Input Section Styles */
+.input-section {
+  margin-bottom: 2rem;
 }
 
 .form-group {
-  margin: 15px 0;
+  margin-bottom: 1.5rem;
 }
 
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.voice-select {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  appearance: none;
+  font-size: 1rem;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.voice-select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-secondary);
+}
+
+.text-input {
+  width: 100%;
+  height: 150px;
+  padding: 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 1rem;
+  resize: vertical;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* Button Styles */
+.generate-btn {
+  width: 100%;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(99, 102, 241, 0.15);
+}
+
+.generate-btn:active {
+  transform: translateY(1px);
+}
+
+/* Output Section */
+.output-section {
+  margin-top: 2rem;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 2rem;
+}
+
+.audio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.audio-title {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.audio-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/* Audio Visualization */
+.audio-waveform {
+  display: flex;
+  align-items: flex-end;
+  height: 50px;
+  margin: 1.5rem 0;
+  gap: 2px;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.wave-bar {
+  width: 12%;
+  background: #e2e8f0;
+  border-radius: 4px;
+  animation: wave 1.2s ease-in-out infinite;
+  transform-origin: bottom;
+}
+/* option 1
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  25% {
+    transform: scaleY(0.8);
+  }
+  50% {
+    transform: scaleY(1.2);
+  }
+  75% {
+    transform: scaleY(0.6);
+  }
+}*/
+
+/* Option 2: Bouncy animation 
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+}
+*/
+/* Option 3: Random height animation */
+.wave-bar:nth-child(odd) {
+  animation: wave 1s ease-in-out infinite alternate;
+}
+.wave-bar:nth-child(even) {
+  animation: wave 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  from {
+    transform: scaleY(0.3);
+  }
+  to {
+    transform: scaleY(1.2);
+  }
+}
+
+.download-btn {
+  padding: 0.75rem 1.5rem;
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .audio-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .container {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .download-btn {
+    text-align: center;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .audio-waveform {
+    height: 40px;
+  }
+}
+
+/* Add to style.css */
+/* ----------------- */
+/* Hidden state */
+.hidden {
+  display: none !important;
+}
+
+/* Loader animation */
+.loader {
+  position: relative;
+  text-align: center;
+  padding: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* Audio player transitions */
 .audio-player {
-  margin-top: 30px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  height: 0;
+  flex: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.audio-player.visible {
+  opacity: 1;
+  height: 40px;
+}
+
+/* Waveform animation fix */
+.wave-bar {
+  width: 20px; /* Fixed width instead of percentage */
+  height: 30px;
+  flex-shrink: 0;
 }

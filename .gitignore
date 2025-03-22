@@ -1,0 +1,7 @@
+# .gitignore
+venv/
+audio/
+__pycache__/
+*.pyc
+.vscode/
+.env

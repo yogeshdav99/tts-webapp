@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Text to Speech Converter</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Text to Speech Converter</h1>
+
+      <!-- Error Messages -->
+      {% if error %}
+      <div class="error">⚠️ Error: {{ error }}</div>
+      {% endif %}
+
+      <!-- Success Messages -->
+      {% if success %}
+      <div class="success">✅ {{ success }}</div>
+      {% endif %}
+
+      <!-- Input Form -->
+      <form action="/generate" method="POST">
+        <div class="form-group">
+          <label>Select Voice:</label>
+          <select name="voice">
+            <option value="English (Default)">Female Voice</option>
+            <option value="Spanish">Spanish Voice</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <textarea
+            name="text"
+            placeholder="Enter your text here (max 1000 characters)..."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit">Generate Speech</button>
+      </form>
+
+      <!-- Audio Player -->
+      {% if audio_available %}
+      <div class="audio-player">
+        <h3>Your Generated Audio:</h3>
+        <audio controls>
+          <source
+            src="{{ url_for('serve_audio', filename='output.wav') }}"
+            type="audio/wav"
+          />
+          Your browser does not support audio playback.
+        </audio>
+        <a
+          href="{{ url_for('serve_audio', filename='output.wav') }}"
+          download
+          class="download-btn"
+        >
+          ⬇️ Download Audio
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>

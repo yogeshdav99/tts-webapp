@@ -1,15 +1,16 @@
-from flask import Flask, render_template, request, send_file, send_from_directory
+from flask import Flask, jsonify, render_template, request, send_from_directory
 from TTS.api import TTS
 import os
+import uuid
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
 MODELS = {
     "English (Default)": "tts_models/en/ljspeech/tacotron2-DDC",
     "Spanish": "tts_models/es/css10/vits"    
 }
 
-
-# Create audio directory if not exists
 if not os.path.exists("audio"):
     os.makedirs("audio")
 
@@ -20,36 +21,36 @@ def home():
 @app.route('/generate', methods=['POST'])
 def generate():
     try:
-        # Get form data
-        text = request.form['text'].replace('—', '-')
+        text = request.form['text'].strip().replace('—', '-')
         voice = request.form.get('voice', 'English (Default)')
-        
-        # Validate input
+
         if not text:
-            raise ValueError("Please enter some text")
+            return jsonify({"error": "Please enter some text"}), 400
         if len(text) > 1000:
-            raise ValueError("Text exceeds 1000 character limit")
-            
-        # Initialize TTS with selected voice
-        model_name = MODELS.get(voice, MODELS["English (Default)"])
+            return jsonify({"error": "Text exceeds 1000 character limit"}), 400
+
+        model_name = MODELS.get(voice)
+        if not model_name:
+            return jsonify({"error": "Invalid voice selection"}), 400
+
+        filename = f"output_{uuid.uuid4().hex}.wav"
+        output_path = os.path.join("audio", filename)
+
         tts = TTS(model_name=model_name, gpu=False)
-        
-        # Generate audio
-        output_path = "audio/output.wav"
         tts.tts_to_file(text=text, file_path=output_path)
         
-        return render_template('index.html', 
-                            audio_available=True,
-                            success="Audio generated successfully!")
+        return jsonify({
+            "success": "Audio generated successfully!",
+            "audio_url": f"/audio/{filename}"
+        })
         
     except Exception as e:
-        return render_template('index.html', 
-                             error=str(e),
-                             audio_available=False)
+        app.logger.error(f"Generation error: {str(e)}")
+        return jsonify({"error": f"Audio generation failed: {str(e)}"}), 500
 
 @app.route('/audio/<filename>')
 def serve_audio(filename):
-    return send_from_directory("audio", filename)
+    return send_from_directory("audio", secure_filename(filename))
 
 if __name__ == '__main__':
     app.run(debug=True)

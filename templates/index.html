@@ -1,67 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Text to Speech Converter</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoiceForge | Text to Speech Converter</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="container">
-      <h1>Text to Speech Converter</h1>
+    <div id="message" class="message-container"></div>
+    <main class="container">
+      <header class="header">
+        <i class="fas fa-waveform audio-icon"></i>
+        <h1 class="title">VoiceForge</h1>
+        <p class="subtitle">Transform text into natural-sounding speech</p>
+      </header>
 
-      <!-- Error Messages -->
-      {% if error %}
-      <div class="error">⚠️ Error: {{ error }}</div>
-      {% endif %}
+      <div class="content-wrapper">
+        <form id="ttsForm" class="input-section">
+          <!-- Form groups remain same -->
+          <div class="form-group">
+            <label class="input-label">
+              <i class="fas fa-voice-over"></i>
+              Select Voice Style
+            </label>
+            <div class="select-wrapper">
+              <select class="voice-select" name="voice">
+                <option value="English (Default)">Standard Voice</option>
+                <option value="Spanish">Spanish Voice</option>
+              </select>
+              <i class="fas fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
 
-      <!-- Success Messages -->
-      {% if success %}
-      <div class="success">✅ {{ success }}</div>
-      {% endif %}
+          <div class="form-group">
+            <label class="input-label">
+              <i class="fas fa-text"></i>
+              Your Text Input
+            </label>
+            <textarea
+              class="text-input"
+              name="text"
+              placeholder="Enter your story, article, or message here (max 1000 characters)..."
+              maxlength="1000"
+              aria-label="Text input field"
+            ></textarea>
+            <div class="char-counter">
+              <span id="charCount">0</span>/1000 characters
+            </div>
+          </div>
 
-      <!-- Input Form -->
-      <form action="/generate" method="POST">
-        <div class="form-group">
-          <label>Select Voice:</label>
-          <select name="voice">
-            <option value="English (Default)">Female Voice</option>
-            <option value="Spanish">Spanish Voice</option>
-          </select>
-        </div>
+          <button
+            type="submit"
+            class="generate-btn"
+            aria-label="Generate speech"
+          >
+            <i class="fas fa-magic btn-icon"></i>
+            Generate Speech
+          </button>
+        </form>
 
-        <div class="form-group">
-          <textarea
-            name="text"
-            placeholder="Enter your text here (max 1000 characters)..."
-            required
-          ></textarea>
-        </div>
+        <section class="output-section hidden" id="outputSection">
+          <div class="audio-header">
+            <h2 class="audio-title">
+              <i class="fas fa-music"></i>
+              Your Audio Result
+            </h2>
+            <div class="audio-duration">
+              <i class="fas fa-clock"></i>
+              <span id="duration">0:00</span>
+            </div>
+          </div>
 
-        <button type="submit">Generate Speech</button>
-      </form>
+          <div class="audio-waveform" aria-hidden="true">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+          </div>
 
-      <!-- Audio Player -->
-      {% if audio_available %}
-      <div class="audio-player">
-        <h3>Your Generated Audio:</h3>
-        <audio controls>
-          <source
-            src="{{ url_for('serve_audio', filename='output.wav') }}"
-            type="audio/wav"
-          />
-          Your browser does not support audio playback.
-        </audio>
-        <a
-          href="{{ url_for('serve_audio', filename='output.wav') }}"
-          download
-          class="download-btn"
-        >
-          ⬇️ Download Audio
-        </a>
+          <div class="audio-controls">
+            <audio class="audio-player" controls id="audioElement"></audio>
+            <a class="download-btn" id="downloadLink">
+              <i class="fas fa-download"></i>
+              Download MP3
+            </a>
+          </div>
+        </section>
       </div>
-      {% endif %}
-    </div>
+
+      <div class="loader hidden" id="loader">
+        <div class="spinner"></div>
+        <p class="loading-text">Crafting your audio...</p>
+      </div>
+    </main>
+
+    <script>
+      const ttsForm = document.getElementById("ttsForm");
+      const textInput = document.querySelector(".text-input");
+      const charCount = document.getElementById("charCount");
+      const audioElement = document.getElementById("audioElement");
+      const downloadLink = document.getElementById("downloadLink");
+      const outputSection = document.getElementById("outputSection");
+      const loader = document.getElementById("loader");
+      const durationDisplay = document.getElementById("duration");
+      const messageContainer = document.getElementById("message");
+
+      textInput.addEventListener("input", () => {
+        const length = textInput.value.length;
+        charCount.textContent = length;
+        textInput.classList.toggle("error-border", length >= 1000);
+      });
+
+      const updateDuration = () => {
+        if (!audioElement.duration) return;
+        const minutes = Math.floor(audioElement.duration / 60);
+        const seconds = Math.floor(audioElement.duration % 60);
+        durationDisplay.textContent = `${minutes}:${seconds
+          .toString()
+          .padStart(2, "0")}`;
+      };
+
+      audioElement.addEventListener("loadedmetadata", updateDuration);
+
+      ttsForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loader.classList.remove("hidden");
+        outputSection.classList.add("hidden");
+        audioElement.classList.remove("visible");
+        messageContainer.innerHTML = "";
+
+        try {
+          const formData = new FormData(ttsForm);
+          const response = await fetch("/generate", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "Unknown error");
+          if (!data.audio_url) throw new Error("Invalid audio URL");
+
+          const timestamp = Date.now();
+          audioElement.src = `${data.audio_url}?t=${timestamp}`;
+          downloadLink.href = `${data.audio_url}?t=${timestamp}`;
+
+          audioElement.addEventListener(
+            "canplay",
+            () => {
+              outputSection.classList.remove("hidden");
+              audioElement.classList.add("visible");
+              animateWaveform();
+            },
+            { once: true }
+          );
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          loader.classList.add("hidden");
+        }
+      });
+
+      function animateWaveform() {
+        document.querySelectorAll(".wave-bar").forEach((bar, index) => {
+          bar.style.animationDelay = `${index * 0.2}s`;
+        });
+      }
+
+      function showError(message) {
+        messageContainer.innerHTML = `
+          <div class="error">
+              <i class="fas fa-exclamation-circle"></i>
+              ${message}
+          </div>
+        `;
+      }
+
+      charCount.textContent = textInput.value.length;
+    </script>
   </body>
 </html>

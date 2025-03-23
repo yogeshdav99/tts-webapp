@@ -6,6 +6,8 @@
   --background: #f8fafc;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
+  --transition: 0.3s ease-in-out;
+  --border-radius: 1rem;
 }
 
 * {
@@ -21,15 +23,22 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   padding: 2rem;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .container {
   max-width: 800px;
   margin: 0 auto;
-  background: white;
-  border-radius: 1.5rem;
+  background: #ffffff;
+  border-radius: calc(var(--border-radius) + 0.5rem);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
   padding: 2.5rem;
+  transition: box-shadow var(--transition);
+}
+
+.container:hover {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Add error border class */
@@ -38,7 +47,6 @@ body {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
 }
 
-/* Rest of your existing CSS remains the same... */
 .header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -92,11 +100,11 @@ body {
   width: 100%;
   padding: 1rem;
   border: 2px solid #e2e8f0;
-  border-radius: 0.75rem;
+  border-radius: var(--border-radius);
   appearance: none;
   font-size: 1rem;
-  background: white;
-  transition: all 0.3s ease;
+  background: #ffffff;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .voice-select:focus {
@@ -119,11 +127,11 @@ body {
   height: 150px;
   padding: 1.25rem;
   border: 2px solid #e2e8f0;
-  border-radius: 1rem;
+  border-radius: calc(var(--border-radius) + 0.5rem);
   resize: vertical;
   font-size: 1rem;
   line-height: 1.5;
-  transition: all 0.3s ease;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .text-input:focus {
@@ -143,13 +151,13 @@ body {
   width: 100%;
   padding: 1.25rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
+  color: #ffffff;
   border: none;
-  border-radius: 0.75rem;
+  border-radius: var(--border-radius);
   font-weight: 600;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform var(--transition), box-shadow var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -210,41 +218,16 @@ body {
 }
 
 .wave-bar {
-  width: 12%;
+  width: 20px; /* Fixed width for consistency */
+  height: 30px;
+  flex-shrink: 0;
   background: #e2e8f0;
   border-radius: 4px;
   animation: wave 1.2s ease-in-out infinite;
   transform-origin: bottom;
 }
-/* option 1
-@keyframes wave {
-  0%,
-  100% {
-    transform: scaleY(0.4);
-  }
-  25% {
-    transform: scaleY(0.8);
-  }
-  50% {
-    transform: scaleY(1.2);
-  }
-  75% {
-    transform: scaleY(0.6);
-  }
-}*/
 
-/* Option 2: Bouncy animation 
-@keyframes wave {
-  0%,
-  100% {
-    transform: scaleY(0.3);
-  }
-  50% {
-    transform: scaleY(1.5);
-  }
-}
-*/
-/* Option 3: Random height animation */
+/* Alternate animation for odd and even bars */
 .wave-bar:nth-child(odd) {
   animation: wave 1s ease-in-out infinite alternate;
 }
@@ -264,6 +247,20 @@ body {
 .download-btn {
   padding: 0.75rem 1.5rem;
   white-space: nowrap;
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.download-btn:hover {
+  background-color: var(--secondary);
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */
@@ -291,19 +288,17 @@ body {
   }
 }
 
-/* Add to style.css */
-/* ----------------- */
 /* Hidden state */
 .hidden {
   display: none !important;
 }
 
-/* Loader animation */
+/* Loader Animation */
 .loader {
   position: relative;
   text-align: center;
   padding: 1.5rem;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition);
 }
 
 .loading-text {
@@ -317,17 +312,10 @@ body {
   opacity: 0;
   height: 0;
   flex: 1;
-  transition: all 0.3s ease-in-out;
+  transition: opacity var(--transition), height var(--transition);
 }
 
 .audio-player.visible {
   opacity: 1;
   height: 40px;
-}
-
-/* Waveform animation fix */
-.wave-bar {
-  width: 20px; /* Fixed width instead of percentage */
-  height: 30px;
-  flex-shrink: 0;
 }

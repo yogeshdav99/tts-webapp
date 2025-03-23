@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VoiceForge | Text to Speech Converter</title>
+    <link rel="icon" href="/favicon.ico" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -18,41 +19,57 @@
     />
   </head>
   <body>
-    <div id="message" class="message-container"></div>
+    <!-- Alert container for messages -->
+    <div
+      id="message"
+      class="message-container"
+      role="alert"
+      aria-live="assertive"
+    ></div>
     <main class="container">
       <header class="header">
-        <i class="fas fa-waveform audio-icon"></i>
+        <i class="fas fa-waveform audio-icon" aria-hidden="true"></i>
         <h1 class="title">VoiceForge</h1>
         <p class="subtitle">Transform text into natural-sounding speech</p>
       </header>
 
-      <div class="content-wrapper">
-        <form id="ttsForm" class="input-section">
-          <!-- Form groups remain same -->
+      <!-- Main content wrapper -->
+      <section class="content-wrapper">
+        <form id="ttsForm" class="input-section" novalidate>
           <div class="form-group">
-            <label class="input-label">
-              <i class="fas fa-voice-over"></i>
-              Select Voice Style
+            <label for="voiceSelect" class="input-label">
+              <i class="fas fa-voice-over" aria-hidden="true"></i>
+              Select Your Voice Style
             </label>
             <div class="select-wrapper">
-              <select class="voice-select" name="voice">
+              <select
+                class="voice-select"
+                name="voice"
+                id="voiceSelect"
+                aria-label="Voice selection"
+              >
                 <option value="English (Default)">Standard Voice</option>
                 <option value="Spanish">Spanish Voice</option>
               </select>
-              <i class="fas fa-chevron-down select-arrow"></i>
+              <i
+                class="fas fa-chevron-down select-arrow"
+                aria-hidden="true"
+              ></i>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="input-label">
-              <i class="fas fa-text"></i>
-              Your Text Input
+            <label for="textInput" class="input-label">
+              <i class="fas fa-text" aria-hidden="true"></i>
+              Enter Your Text
             </label>
             <textarea
               class="text-input"
               name="text"
+              id="textInput"
               placeholder="Enter your story, article, or message here (max 1000 characters)..."
               maxlength="1000"
+              aria-describedby="charCount"
               aria-label="Text input field"
             ></textarea>
             <div class="char-counter">
@@ -65,19 +82,23 @@
             class="generate-btn"
             aria-label="Generate speech"
           >
-            <i class="fas fa-magic btn-icon"></i>
+            <i class="fas fa-magic btn-icon" aria-hidden="true"></i>
             Generate Speech
           </button>
         </form>
 
-        <section class="output-section hidden" id="outputSection">
+        <section
+          class="output-section hidden"
+          id="outputSection"
+          aria-live="polite"
+        >
           <div class="audio-header">
             <h2 class="audio-title">
-              <i class="fas fa-music"></i>
+              <i class="fas fa-music" aria-hidden="true"></i>
               Your Audio Result
             </h2>
             <div class="audio-duration">
-              <i class="fas fa-clock"></i>
+              <i class="fas fa-clock" aria-hidden="true"></i>
               <span id="duration">0:00</span>
             </div>
           </div>
@@ -91,23 +112,23 @@
 
           <div class="audio-controls">
             <audio class="audio-player" controls id="audioElement"></audio>
-            <a class="download-btn" id="downloadLink">
-              <i class="fas fa-download"></i>
+            <a class="download-btn" id="downloadLink" aria-label="Download MP3">
+              <i class="fas fa-download" aria-hidden="true"></i>
               Download MP3
             </a>
           </div>
         </section>
-      </div>
+      </section>
 
-      <div class="loader hidden" id="loader">
-        <div class="spinner"></div>
+      <div class="loader hidden" id="loader" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
         <p class="loading-text">Crafting your audio...</p>
       </div>
     </main>
 
     <script>
       const ttsForm = document.getElementById("ttsForm");
-      const textInput = document.querySelector(".text-input");
+      const textInput = document.getElementById("textInput");
       const charCount = document.getElementById("charCount");
       const audioElement = document.getElementById("audioElement");
       const downloadLink = document.getElementById("downloadLink");
@@ -180,7 +201,7 @@
       function showError(message) {
         messageContainer.innerHTML = `
           <div class="error">
-              <i class="fas fa-exclamation-circle"></i>
+              <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
               ${message}
           </div>
         `;
